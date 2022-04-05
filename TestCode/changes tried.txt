@@ -1,0 +1,7 @@
+FOVS_4 = fopen('C:\Users\Public\research\EKF_c\data\FOVs2.txt','r');
+FOVS_3 = fscanf(FOVS_4,'%lf',[91, 56728]);
+FOVS_2 = transpose(FOVS_3);
+
+[ccd_time, x, y, xmag, m_star, nstar] = read_CCD0(FOVS_2, Ns, FOVs_count);  
+
+[ccd_time, nstar] = read_CCD(ccd_time,FOVS_2, Ns);
