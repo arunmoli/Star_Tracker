@@ -86,6 +86,8 @@ b_est_average = (0.01/3600*pi/180)*ones(1,3);
 q = q/norm(q);
 q0 = q;
 qq_old = q;
+qq = zeros(4,1);
+P_theta = zeros(3);
 
 P = diag([ 1e-6 1e-6 1e-6 1e-8 1e-8 1e-8 ]);
 
@@ -150,7 +152,7 @@ while( ccd_time <= TIMELIMIT )
         rtn = 0 ;
         if (nstar > 6); nstar = 6 ; end % up to 6 stars for PM */
         % rtn = starID_pm(ccd_time, q0, nstar, &cnt, bore_body, outi, outr, outo, outmag, ixy, x, y, xmag) ;
-        [m_star, BLI, NEWBLI, rtn] = starID_pm(ccd_time, q0, nstar, cnt, bore_body, outi, outr, outo, outmag, ixy, x, y, xmag, adjcell, scell, stars, m_star);        
+        [ccd_time, cnt ,m_star, BLI, NEWBLI, rtn] = starID_pm(ccd_time, q0, nstar, cnt, bore_body, outi, outr, outo, outmag, ixy, x, y, xmag, adjcell, scell, stars, m_star);        
         
         fprintf("NEWBLI\n") ;        %  !!PRINT STATEMENT!!<-----------------------------------------------------------------*/
         fprintf("mag        id      num\n") ;
@@ -198,7 +200,7 @@ while( ccd_time <= TIMELIMIT )
     elseif (ccd_time >= cctime && nstar > 0 && consec ~= 0)
         fprintf("moved on")
         c_dm = c_dm + 1;
-        rtn = starID_dm(ccd_time, q0, nstar, cnt, cctime, w, crf_count, id_star, id_body, outi, outr, outo, outmag, outdist, ixy, x, y, xmag, ccd_time0, ccd_time);
+        [ccd_time, cnt ,rtn] = starID_dm(ccd_time, q0, nstar, cnt, cctime, w, crf_count, id_star, id_body, outi, outr, outo, outmag, outdist, ixy, x, y, xmag, ccd_time0, ccd_time);
         for(i=1:BLI_size)
         fprintf("%0.4f  %4d      %0.4f   %0.4f   %0.4f   %4f\n",BLI(i).IBL,BLI(i).starnum,BLI(i).L(1),BLI(i).L(2),BLI(i).L(3), BLI(i).mag) ;
         end
@@ -238,7 +240,7 @@ while( ccd_time <= TIMELIMIT )
     fprintf('%g %g\n', ccd_time, TIMELIMIT); %FOR DEBUGGING
     total_ided = total_ided + crf_count ;  % just for statistics %
     if (cnt >= 3)
-        rtn = q_method(ccd_time, qq, P_theta, cnt, d_i, outla, out2);
+        [qq, P, d_i, rtn] = q_method(crf, b_star, cnt, d_i);
         if (rtn ~= 0)
 			  fprintf(stdout,"q_method() finished abnormally at %10.2f\n", ccd_time);
         end
